@@ -1,4 +1,4 @@
-# Template for tasks of C++ course
+# Matrix
 
 > NOTE: Change project name in CMakeLists.txt for another task
 
