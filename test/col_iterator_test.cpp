@@ -18,12 +18,12 @@ class col_iterator : public ::testing::Test {
 protected:
   using matrix = ::matrix<element>;
 
-  matrix m{
+  matrix m = matrix({
       { 1,  2,  3},
       { 4,  5,  6},
       {11, 12, 13},
       {14, 15, 16},
-  };
+  });
 };
 
 bool operator==(matrix<element>::const_iterator it, matrix<element>::const_col_iterator col_it) {
@@ -86,9 +86,7 @@ TEST_F(col_iterator, indirection) {
   }
   EXPECT_EQ(it, end);
 
-  for (element x : m.col(1)) {
-    EXPECT_EQ(42, x);
-  }
+  std::for_each(m.col_begin(1), m.col_end(1), [](element x) { EXPECT_EQ(42, x); });
 }
 
 TEST_F(col_iterator, member_access) {
@@ -103,9 +101,7 @@ TEST_F(col_iterator, member_access) {
   }
   EXPECT_EQ(it, end);
 
-  for (element x : m.col(1)) {
-    EXPECT_EQ(42, x);
-  }
+  std::for_each(m.col_begin(1), m.col_end(1), [](element x) { EXPECT_EQ(42, x); });
 }
 
 TEST_F(col_iterator, increment) {

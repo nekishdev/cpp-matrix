@@ -38,12 +38,6 @@ TEST(traits_test, iterator_categories) {
 TEST(traits_test, range_categories) {
   EXPECT_TRUE(std::ranges::contiguous_range<matrix<element>>);
   EXPECT_TRUE(std::ranges::contiguous_range<const matrix<element>>);
-
-  EXPECT_TRUE(std::ranges::contiguous_range<matrix<element>::row_view>);
-  EXPECT_TRUE(std::ranges::contiguous_range<matrix<element>::const_row_view>);
-
-  EXPECT_TRUE(std::ranges::random_access_range<matrix<element>::col_view>);
-  EXPECT_TRUE(std::ranges::random_access_range<matrix<element>::const_col_view>);
 }
 
 TEST(traits_test, iterator_member_types) {

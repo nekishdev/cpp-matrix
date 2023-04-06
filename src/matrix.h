@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cstddef>
-#include <initializer_list>
 
 template <class T>
 class matrix {
@@ -23,19 +22,13 @@ public:
   using col_iterator = void;
   using const_col_iterator = void;
 
-  using row_view = void;
-  using const_row_view = void;
-
-  using col_view = void;
-  using const_col_view = void;
-
 public:
   matrix();
 
   matrix(size_t rows, size_t cols);
 
-  template <size_t Cols>
-  matrix(std::initializer_list<T[Cols]> init);
+  template <size_t Rows, size_t Cols>
+  matrix(const T (&init)[Rows][Cols]);
 
   matrix(const matrix& other);
 
@@ -59,14 +52,6 @@ public:
   const_col_iterator col_begin(size_t col) const;
   col_iterator col_end(size_t col);
   const_col_iterator col_end(size_t col) const;
-
-  // Views
-
-  row_view row(size_t row);
-  const_row_view row(size_t row) const;
-
-  col_view col(size_t col);
-  const_col_view col(size_t col) const;
 
   // Size
 

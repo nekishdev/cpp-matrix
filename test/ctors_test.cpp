@@ -134,6 +134,32 @@ TEST_F(ctors_test, zeros_ctor_weird) {
   });
 }
 
+TEST_F(ctors_test, init_ctor) {
+  matrix<element> a({
+      {10, 20, 30},
+      {40, 50, 60},
+  });
+
+  EXPECT_EQ(2, a.rows());
+  EXPECT_EQ(3, a.cols());
+  EXPECT_EQ(6, a.size());
+  EXPECT_FALSE(a.empty());
+  EXPECT_NE(nullptr, a.data());
+
+  EXPECT_EQ(10, a(0, 0));
+  EXPECT_EQ(20, a(0, 1));
+  EXPECT_EQ(30, a(0, 2));
+  EXPECT_EQ(40, a(1, 0));
+  EXPECT_EQ(50, a(1, 1));
+  EXPECT_EQ(60, a(1, 2));
+
+  expect_counters({
+      .default_ctor_calls = 6,
+      .value_ctor_calls = 6,
+      .copy_assign_calls = 6,
+  });
+}
+
 TEST_F(ctors_test, copy_ctor) {
   constexpr size_t ROWS = 40;
   constexpr size_t COLS = 100;
@@ -276,62 +302,6 @@ TEST_F(ctors_test, copy_assignment_empty) {
 
   expect_counters({
       .default_ctor_calls = SIZE_B,
-      .value_ctor_calls = 0,
-      .copy_assign_calls = 0,
-  });
-}
-
-static void test_direct_or_copy_init(matrix<element>& a) {
-  EXPECT_EQ(2, a.rows());
-  EXPECT_EQ(3, a.cols());
-  EXPECT_EQ(6, a.size());
-  EXPECT_FALSE(a.empty());
-  EXPECT_NE(nullptr, a.data());
-
-  for (size_t i = 0; i < a.rows(); ++i) {
-    EXPECT_EQ(3, a.row(i).size());
-  }
-
-  for (size_t i = 0; i < a.cols(); ++i) {
-    EXPECT_EQ(2, a.col(i).size());
-  }
-
-  EXPECT_EQ(10, a(0, 0));
-  EXPECT_EQ(20, a(0, 1));
-  EXPECT_EQ(30, a(0, 2));
-  EXPECT_EQ(40, a(1, 0));
-  EXPECT_EQ(50, a(1, 1));
-  EXPECT_EQ(60, a(1, 2));
-
-  expect_counters({
-      .default_ctor_calls = 6,
-      .value_ctor_calls = 6,
-      .copy_assign_calls = 6,
-  });
-}
-
-TEST_F(ctors_test, direct_init) {
-  matrix<element> a{
-      {10, 20, 30},
-      {40, 50, 60},
-  };
-  test_direct_or_copy_init(a);
-}
-
-TEST_F(ctors_test, copy_init) {
-  matrix<element> a = {
-      {10, 20, 30},
-      {40, 50, 60},
-  };
-  test_direct_or_copy_init(a);
-}
-
-TEST_F(ctors_test, empty_init) {
-  matrix<element> a{std::initializer_list<element[10]>{}};
-  expect_empty(a);
-
-  expect_counters({
-      .default_ctor_calls = 0,
       .value_ctor_calls = 0,
       .copy_assign_calls = 0,
   });
