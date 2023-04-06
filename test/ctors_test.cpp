@@ -7,12 +7,12 @@ namespace {
 
 class element {
 public:
-  element() : _value{0} {
+  element() : _value(0) {
     ++objects;
     ++default_ctor_calls;
   }
 
-  element(size_t value) : _value{value} {
+  element(size_t value) : _value(value) {
     ++objects;
     ++value_ctor_calls;
   }
@@ -88,7 +88,7 @@ TEST_F(ctors_test, zeros_ctor) {
   constexpr size_t COLS = 100;
   constexpr size_t SIZE = ROWS * COLS;
 
-  matrix<element> a{ROWS, COLS};
+  matrix<element> a(ROWS, COLS);
 
   EXPECT_EQ(ROWS, a.rows());
   EXPECT_EQ(COLS, a.cols());
@@ -110,7 +110,7 @@ TEST_F(ctors_test, zeros_ctor) {
 }
 
 TEST_F(ctors_test, zeros_ctor_empty) {
-  matrix<element> a{0, 0};
+  matrix<element> a(0, 0);
   expect_empty(a);
 
   expect_counters({
@@ -121,10 +121,10 @@ TEST_F(ctors_test, zeros_ctor_empty) {
 }
 
 TEST_F(ctors_test, zeros_ctor_weird) {
-  matrix<element> a{10, 0};
+  matrix<element> a(10, 0);
   expect_empty(a);
 
-  matrix<element> b{0, 10};
+  matrix<element> b(0, 10);
   expect_empty(b);
 
   expect_counters({
@@ -165,7 +165,7 @@ TEST_F(ctors_test, copy_ctor) {
   constexpr size_t COLS = 100;
   constexpr size_t SIZE = ROWS * COLS;
 
-  matrix<element> a{ROWS, COLS};
+  matrix<element> a(ROWS, COLS);
 
   expect_counters({
       .default_ctor_calls = SIZE,
@@ -215,10 +215,10 @@ TEST_F(ctors_test, copy_assignment) {
   constexpr size_t COLS_B = 15;
   constexpr size_t SIZE_B = ROWS_B * COLS_B;
 
-  matrix<element> b{ROWS_B, COLS_B};
+  matrix<element> b(ROWS_B, COLS_B);
 
   {
-    matrix<element> a{ROWS_A, COLS_A};
+    matrix<element> a(ROWS_A, COLS_A);
 
     expect_counters({
         .default_ctor_calls = SIZE_A + SIZE_B,
@@ -257,7 +257,7 @@ TEST_F(ctors_test, self_copy_assignment) {
   constexpr size_t COLS = 100;
   constexpr size_t SIZE = ROWS * COLS;
 
-  matrix<element> a{ROWS, COLS};
+  matrix<element> a(ROWS, COLS);
 
   expect_counters({
       .default_ctor_calls = SIZE,
@@ -294,7 +294,7 @@ TEST_F(ctors_test, copy_assignment_empty) {
   constexpr size_t SIZE_B = ROWS_B * COLS_B;
 
   matrix<element> a;
-  matrix<element> b{ROWS_B, COLS_B};
+  matrix<element> b(ROWS_B, COLS_B);
   b = a;
 
   expect_empty(a);

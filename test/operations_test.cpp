@@ -6,7 +6,7 @@
 #include <numeric>
 
 TEST(operations_test, element_access) {
-  matrix<int> a{2, 3};
+  matrix<int> a(2, 3);
 
   a(0, 2) = 5;
   a(1, 1) = 42;
@@ -26,7 +26,7 @@ TEST(operations_test, data) {
   constexpr size_t ROWS = 40;
   constexpr size_t COLS = 100;
 
-  matrix<int> a{ROWS, COLS};
+  matrix<int> a(ROWS, COLS);
   fill(a);
 
   {
@@ -52,7 +52,7 @@ TEST(operations_test, range_based_for) {
   constexpr size_t ROWS = 40;
   constexpr size_t COLS = 100;
 
-  matrix<int> a{ROWS, COLS};
+  matrix<int> a(ROWS, COLS);
   fill(a);
 
   for (size_t i = 0; int x : a) {
@@ -169,7 +169,7 @@ TEST(operations_test, col_range_based_for) {
   constexpr size_t COLS = 100;
   constexpr size_t CHOSEN_COL = 2;
 
-  matrix<int> a{ROWS, COLS};
+  matrix<int> a(ROWS, COLS);
   fill(a);
 
   view col_view(a.col_begin(CHOSEN_COL), a.col_end(CHOSEN_COL));

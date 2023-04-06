@@ -7,7 +7,7 @@ namespace {
 struct element {
   element() = default;
 
-  element(int value) : value{value} {}
+  element(int value) : value(value) {}
 
   friend bool operator==(element, element) = default;
 
