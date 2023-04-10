@@ -43,6 +43,10 @@ It advance(It it, std::iter_difference_t<It> n) {
   return it;
 }
 
+std::ptrdiff_t as_diff(std::size_t n) {
+  return static_cast<std::ptrdiff_t>(n);
+}
+
 } // namespace
 
 TEST_F(col_iterator, non_const_to_const) {
@@ -153,6 +157,35 @@ TEST_F(col_iterator, sub_diff) {
   }
 }
 
+TEST_F(col_iterator, add_neg_diff) {
+  auto it = std::as_const(m).col_end(1);
+
+  EXPECT_EQ(m.col_begin(1), it + -as_diff(m.rows()));
+
+  for (std::ptrdiff_t i = 0; i <= m.rows(); ++i) {
+    EXPECT_EQ(advance(it, -i), it + -i);
+    EXPECT_EQ(advance(it, -i), -i + it);
+
+    auto it2 = it;
+    it2 += -i;
+    EXPECT_EQ(advance(it, -i), it2);
+  }
+}
+
+TEST_F(col_iterator, sub_neg_diff) {
+  auto it = std::as_const(m).col_begin(1);
+
+  EXPECT_EQ(m.col_end(1), it - -as_diff(m.rows()));
+
+  for (std::ptrdiff_t i = 0; i <= m.rows(); ++i) {
+    EXPECT_EQ(advance(it, i), it - -i);
+
+    auto it2 = it;
+    it2 -= -i;
+    EXPECT_EQ(advance(it, i), it2);
+  }
+}
+
 TEST_F(col_iterator, iter_diff) {
   auto it = std::as_const(m).col_begin(1);
   auto end = m.col_end(1);
@@ -160,11 +193,13 @@ TEST_F(col_iterator, iter_diff) {
   EXPECT_EQ(0, it - it);
   EXPECT_EQ(0, end - end);
   EXPECT_EQ(m.rows(), end - it);
+  EXPECT_EQ(-as_diff(m.rows()), it - end);
 
   ++it;
   --end;
 
   EXPECT_EQ(m.rows() - 2, end - it);
+  EXPECT_EQ(-as_diff(m.rows() - 2), it - end);
 }
 
 TEST_F(col_iterator, subscript) {
