@@ -5,67 +5,10 @@
 
 namespace {
 
-class element {
-public:
-  element() : _value(0) {
-    ++objects;
-    ++default_ctor_calls;
-  }
-
-  element(size_t value) : _value(value) {
-    ++objects;
-    ++value_ctor_calls;
-  }
-
-  element& operator=(const element& other) {
-    _value = other._value;
-    ++copy_assign_calls;
-    return *this;
-  }
-
-  ~element() {
-    --objects;
-  }
-
-  friend bool operator==(const element&, const element&) = default;
-
-  friend bool operator==(const element& e, size_t n) {
-    return e._value == n;
-  }
-
-public:
-  inline static size_t objects;
-  inline static size_t default_ctor_calls;
-  inline static size_t value_ctor_calls;
-  inline static size_t copy_assign_calls;
-
-private:
-  size_t _value;
-};
-
-struct expected_counters {
-  size_t default_ctor_calls;
-  size_t value_ctor_calls;
-  size_t copy_assign_calls;
-};
-
-void expect_counters(expected_counters expected_counters) {
-  EXPECT_EQ(expected_counters.default_ctor_calls, element::default_ctor_calls);
-  EXPECT_EQ(expected_counters.value_ctor_calls, element::value_ctor_calls);
-  EXPECT_EQ(expected_counters.copy_assign_calls, element::copy_assign_calls);
-}
-
 class ctors_test : public ::testing::Test {
 protected:
   void SetUp() override {
-    element::objects = 0;
-    element::default_ctor_calls = 0;
-    element::value_ctor_calls = 0;
-    element::copy_assign_calls = 0;
-  }
-
-  void TearDown() override {
-    EXPECT_EQ(0, element::objects);
+    element::reset_allocations();
   }
 };
 
@@ -75,12 +18,7 @@ TEST_F(ctors_test, default_ctor) {
   matrix<element> a;
 
   expect_empty(a);
-
-  expect_counters({
-      .default_ctor_calls = 0,
-      .value_ctor_calls = 0,
-      .copy_assign_calls = 0,
-  });
+  expect_allocations(0);
 }
 
 TEST_F(ctors_test, zeros_ctor) {
@@ -102,22 +40,14 @@ TEST_F(ctors_test, zeros_ctor) {
     }
   }
 
-  expect_counters({
-      .default_ctor_calls = SIZE,
-      .value_ctor_calls = 0,
-      .copy_assign_calls = 0,
-  });
+  expect_allocations(SIZE);
 }
 
 TEST_F(ctors_test, zeros_ctor_empty) {
   matrix<element> a(0, 0);
-  expect_empty(a);
 
-  expect_counters({
-      .default_ctor_calls = 0,
-      .value_ctor_calls = 0,
-      .copy_assign_calls = 0,
-  });
+  expect_empty(a);
+  expect_allocations(0);
 }
 
 TEST_F(ctors_test, zeros_ctor_weird) {
@@ -127,11 +57,7 @@ TEST_F(ctors_test, zeros_ctor_weird) {
   matrix<element> b(0, 10);
   expect_empty(b);
 
-  expect_counters({
-      .default_ctor_calls = 0,
-      .value_ctor_calls = 0,
-      .copy_assign_calls = 0,
-  });
+  expect_allocations(0);
 }
 
 TEST_F(ctors_test, init_ctor) {
@@ -153,11 +79,7 @@ TEST_F(ctors_test, init_ctor) {
   EXPECT_EQ(50, a(1, 1));
   EXPECT_EQ(60, a(1, 2));
 
-  expect_counters({
-      .default_ctor_calls = 6,
-      .value_ctor_calls = 6,
-      .copy_assign_calls = 6,
-  });
+  expect_allocations(6);
 }
 
 TEST_F(ctors_test, copy_ctor) {
@@ -167,29 +89,17 @@ TEST_F(ctors_test, copy_ctor) {
 
   matrix<element> a(ROWS, COLS);
 
-  expect_counters({
-      .default_ctor_calls = SIZE,
-      .value_ctor_calls = 0,
-      .copy_assign_calls = 0,
-  });
+  expect_allocations(SIZE);
 
   fill(a);
 
-  expect_counters({
-      .default_ctor_calls = SIZE,
-      .value_ctor_calls = SIZE,
-      .copy_assign_calls = SIZE,
-  });
+  expect_allocations(SIZE);
 
   matrix<element> b = a;
 
   expect_equal(a, b);
 
-  expect_counters({
-      .default_ctor_calls = SIZE * 2,
-      .value_ctor_calls = SIZE,
-      .copy_assign_calls = SIZE * 2,
-  });
+  expect_allocations(SIZE * 2);
 }
 
 TEST_F(ctors_test, copy_ctor_empty) {
@@ -199,11 +109,7 @@ TEST_F(ctors_test, copy_ctor_empty) {
   expect_empty(a);
   expect_empty(b);
 
-  expect_counters({
-      .default_ctor_calls = 0,
-      .value_ctor_calls = 0,
-      .copy_assign_calls = 0,
-  });
+  expect_allocations(0);
 }
 
 TEST_F(ctors_test, copy_assignment) {
@@ -220,29 +126,17 @@ TEST_F(ctors_test, copy_assignment) {
   {
     matrix<element> a(ROWS_A, COLS_A);
 
-    expect_counters({
-        .default_ctor_calls = SIZE_A + SIZE_B,
-        .value_ctor_calls = 0,
-        .copy_assign_calls = 0,
-    });
+    expect_allocations(SIZE_A + SIZE_B);
 
     fill(a);
 
-    expect_counters({
-        .default_ctor_calls = SIZE_A + SIZE_B,
-        .value_ctor_calls = SIZE_A,
-        .copy_assign_calls = SIZE_A,
-    });
+    expect_allocations(SIZE_A + SIZE_B);
 
     b = a;
 
     expect_equal(a, b);
 
-    expect_counters({
-        .default_ctor_calls = SIZE_A * 2 + SIZE_B,
-        .value_ctor_calls = SIZE_A,
-        .copy_assign_calls = SIZE_A * 2,
-    });
+    expect_allocations(SIZE_A * 2 + SIZE_B);
   }
 
   for (size_t i = 0; i < ROWS_A; ++i) {
@@ -259,27 +153,15 @@ TEST_F(ctors_test, self_copy_assignment) {
 
   matrix<element> a(ROWS, COLS);
 
-  expect_counters({
-      .default_ctor_calls = SIZE,
-      .value_ctor_calls = 0,
-      .copy_assign_calls = 0,
-  });
+  expect_allocations(SIZE);
 
   fill(a);
 
-  expect_counters({
-      .default_ctor_calls = SIZE,
-      .value_ctor_calls = SIZE,
-      .copy_assign_calls = SIZE,
-  });
+  expect_allocations(SIZE);
 
   a = a;
 
-  expect_counters({
-      .default_ctor_calls = SIZE,
-      .value_ctor_calls = SIZE,
-      .copy_assign_calls = SIZE,
-  });
+  expect_allocations(SIZE);
 
   for (size_t i = 0; i < ROWS; ++i) {
     for (size_t j = 0; j < COLS; ++j) {
@@ -300,9 +182,5 @@ TEST_F(ctors_test, copy_assignment_empty) {
   expect_empty(a);
   expect_empty(b);
 
-  expect_counters({
-      .default_ctor_calls = SIZE_B,
-      .value_ctor_calls = 0,
-      .copy_assign_calls = 0,
-  });
+  expect_allocations(SIZE_B);
 }

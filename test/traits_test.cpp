@@ -1,12 +1,7 @@
 #include "matrix.h"
+#include "test_helpers.h"
 
 #include <gtest/gtest.h>
-
-namespace {
-
-struct element {};
-
-} // namespace
 
 TEST(traits_test, member_types) {
   EXPECT_TRUE((std::is_same_v<element, matrix<element>::value_type>));

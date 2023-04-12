@@ -5,14 +5,25 @@
 
 #include <numeric>
 
-TEST(operations_test, element_access) {
-  matrix<int> a(2, 3);
+namespace {
+
+class operations_test : public ::testing::Test {
+protected:
+  void SetUp() override {
+    element::reset_allocations();
+  }
+};
+
+} // namespace
+
+TEST_F(operations_test, element_access) {
+  matrix<element> a(2, 3);
 
   a(0, 2) = 5;
   a(1, 1) = 42;
   a(1, 2) = a(0, 2);
 
-  const matrix<int>& ca = a;
+  const matrix<element>& ca = a;
 
   EXPECT_EQ(0, ca(0, 0));
   EXPECT_EQ(0, ca(0, 1));
@@ -22,15 +33,15 @@ TEST(operations_test, element_access) {
   EXPECT_EQ(5, ca(1, 2));
 }
 
-TEST(operations_test, data) {
+TEST_F(operations_test, data) {
   constexpr size_t ROWS = 40;
   constexpr size_t COLS = 100;
 
-  matrix<int> a(ROWS, COLS);
+  matrix<element> a(ROWS, COLS);
   fill(a);
 
   {
-    int* data = a.data();
+    element* data = a.data();
     for (size_t i = 0; i < ROWS; ++i) {
       for (size_t j = 0; j < COLS; ++j) {
         EXPECT_EQ(elem(i, j), data[i * COLS + j]);
@@ -39,7 +50,7 @@ TEST(operations_test, data) {
   }
 
   {
-    const int* data = std::as_const(a).data();
+    const element* data = std::as_const(a).data();
     for (size_t i = 0; i < ROWS; ++i) {
       for (size_t j = 0; j < COLS; ++j) {
         EXPECT_EQ(elem(i, j), data[i * COLS + j]);
@@ -48,43 +59,43 @@ TEST(operations_test, data) {
   }
 }
 
-TEST(operations_test, range_based_for) {
+TEST_F(operations_test, range_based_for) {
   constexpr size_t ROWS = 40;
   constexpr size_t COLS = 100;
 
-  matrix<int> a(ROWS, COLS);
+  matrix<element> a(ROWS, COLS);
   fill(a);
 
-  for (size_t i = 0; int x : a) {
+  for (size_t i = 0; element x : a) {
     EXPECT_EQ(a(i / COLS, i % COLS), x);
     ++i;
   }
 
-  for (size_t i = 0; int x : std::as_const(a)) {
+  for (size_t i = 0; element x : std::as_const(a)) {
     EXPECT_EQ(a(i / COLS, i % COLS), x);
     ++i;
   }
 
-  for (size_t i = 0; const int& x : a) {
+  for (size_t i = 0; const element& x : a) {
     EXPECT_EQ(a.data() + i, &x);
     EXPECT_EQ(a(i / COLS, i % COLS), x);
     ++i;
   }
 
-  for (size_t i = 0; const int& x : std::as_const(a)) {
+  for (size_t i = 0; const element& x : std::as_const(a)) {
     EXPECT_EQ(a.data() + i, &x);
     EXPECT_EQ(a(i / COLS, i % COLS), x);
     ++i;
   }
 
-  for (size_t i = 0; int& x : a) {
+  for (size_t i = 0; element & x : a) {
     EXPECT_EQ(a.data() + i, &x);
     EXPECT_EQ(a(i / COLS, i % COLS), x);
     x += 2;
     ++i;
   }
 
-  for (size_t i = 0; int x : a) {
+  for (size_t i = 0; element x : a) {
     EXPECT_EQ(elem(i / COLS, i % COLS) + 2, x);
     ++i;
   }
@@ -112,47 +123,47 @@ private:
 
 } // namespace
 
-TEST(operations_test, row_range_based_for) {
+TEST_F(operations_test, row_range_based_for) {
   constexpr size_t ROWS = 40;
   constexpr size_t COLS = 100;
   constexpr size_t CHOSEN_ROW = 2;
 
-  matrix<int> a(ROWS, COLS);
+  matrix<element> a(ROWS, COLS);
   fill(a);
 
   view row_view(a.row_begin(CHOSEN_ROW), a.row_end(CHOSEN_ROW));
   view const_row_view(std::as_const(a).row_begin(CHOSEN_ROW), std::as_const(a).row_end(CHOSEN_ROW));
 
-  for (size_t i = 0; int x : row_view) {
+  for (size_t i = 0; element x : row_view) {
     EXPECT_EQ(a(CHOSEN_ROW, i), x);
     ++i;
   }
 
-  for (size_t i = 0; int x : const_row_view) {
+  for (size_t i = 0; element x : const_row_view) {
     EXPECT_EQ(a(CHOSEN_ROW, i), x);
     ++i;
   }
 
-  for (size_t i = 0; const int& x : row_view) {
+  for (size_t i = 0; const element& x : row_view) {
     EXPECT_EQ(a.data() + COLS * CHOSEN_ROW + i, &x);
     EXPECT_EQ(a(CHOSEN_ROW, i), x);
     ++i;
   }
 
-  for (size_t i = 0; const int& x : const_row_view) {
+  for (size_t i = 0; const element& x : const_row_view) {
     EXPECT_EQ(a.data() + COLS * CHOSEN_ROW + i, &x);
     EXPECT_EQ(a(CHOSEN_ROW, i), x);
     ++i;
   }
 
-  for (size_t i = 0; int& x : row_view) {
+  for (size_t i = 0; element & x : row_view) {
     EXPECT_EQ(a.data() + COLS * CHOSEN_ROW + i, &x);
     EXPECT_EQ(a(CHOSEN_ROW, i), x);
     x += 2;
     ++i;
   }
 
-  for (size_t i = 0; int x : a) {
+  for (size_t i = 0; element x : a) {
     size_t row = i / COLS;
     size_t col = i % COLS;
     if (row == CHOSEN_ROW) {
@@ -164,47 +175,47 @@ TEST(operations_test, row_range_based_for) {
   }
 }
 
-TEST(operations_test, col_range_based_for) {
+TEST_F(operations_test, col_range_based_for) {
   constexpr size_t ROWS = 40;
   constexpr size_t COLS = 100;
   constexpr size_t CHOSEN_COL = 2;
 
-  matrix<int> a(ROWS, COLS);
+  matrix<element> a(ROWS, COLS);
   fill(a);
 
   view col_view(a.col_begin(CHOSEN_COL), a.col_end(CHOSEN_COL));
   view const_col_view(std::as_const(a).col_begin(CHOSEN_COL), std::as_const(a).col_end(CHOSEN_COL));
 
-  for (size_t i = 0; int x : col_view) {
+  for (size_t i = 0; element x : col_view) {
     EXPECT_EQ(a(i, CHOSEN_COL), x);
     ++i;
   }
 
-  for (size_t i = 0; int x : const_col_view) {
+  for (size_t i = 0; element x : const_col_view) {
     EXPECT_EQ(a(i, CHOSEN_COL), x);
     ++i;
   }
 
-  for (size_t i = 0; const int& x : col_view) {
+  for (size_t i = 0; const element& x : col_view) {
     EXPECT_EQ(a.data() + CHOSEN_COL + COLS * i, &x);
     EXPECT_EQ(a(i, CHOSEN_COL), x);
     ++i;
   }
 
-  for (size_t i = 0; const int& x : const_col_view) {
+  for (size_t i = 0; const element& x : const_col_view) {
     EXPECT_EQ(a.data() + CHOSEN_COL + COLS * i, &x);
     EXPECT_EQ(a(i, CHOSEN_COL), x);
     ++i;
   }
 
-  for (size_t i = 0; int& x : col_view) {
+  for (size_t i = 0; element & x : col_view) {
     EXPECT_EQ(a.data() + CHOSEN_COL + COLS * i, &x);
     EXPECT_EQ(a(i, CHOSEN_COL), x);
     x += 2;
     ++i;
   }
 
-  for (size_t i = 0; int x : a) {
+  for (size_t i = 0; element x : a) {
     size_t row = i / COLS;
     size_t col = i % COLS;
     if (col == CHOSEN_COL) {
@@ -216,30 +227,30 @@ TEST(operations_test, col_range_based_for) {
   }
 }
 
-TEST(operations_test, compare) {
-  matrix<int> a({
+TEST_F(operations_test, compare) {
+  matrix<element> a({
       {10, 20, 30},
       {40, 50, 60},
   });
-  matrix<int> b({
+  matrix<element> b({
       {10, 20, 30},
       {40, 50, 60},
   });
-  matrix<int> c({
+  matrix<element> c({
       {10, 20, 30},
       {42, 50, 60},
   });
-  matrix<int> d({
+  matrix<element> d({
       {10, 20},
       {30, 40},
       {50, 60},
   });
-  matrix<int> e({
+  matrix<element> e({
       {10, 20, 30},
   });
-  matrix<int> f({
-      {10},
-      {40},
+  matrix<element> f({
+      {{10}},
+      {{40}},
   });
 
   EXPECT_TRUE(a == b);
@@ -258,159 +269,194 @@ TEST(operations_test, compare) {
   EXPECT_FALSE(a == f);
 }
 
-TEST(operations_test, compare_empty) {
-  matrix<int> a, b;
+TEST_F(operations_test, compare_empty) {
+  matrix<element> a, b;
   EXPECT_TRUE(a == b);
   EXPECT_FALSE(a != b);
+
+  expect_allocations(0);
 }
 
-TEST(operations_test, add) {
-  matrix<int> a({
+TEST_F(operations_test, add) {
+  matrix<element> a({
       {1, 2, 3},
       {4, 5, 6},
   });
-  const matrix<int> b({
+  const matrix<element> b({
       {10, 20, 30},
       {40, 50, 60},
   });
-  const matrix<int> c({
+  const matrix<element> c({
       {11, 22, 33},
       {44, 55, 66},
   });
 
+  size_t expected_allocations = a.size() + b.size() + c.size();
+
   expect_equal(c, a + b);
+
+  expect_allocations(expected_allocations += c.size());
 
   a += b;
   expect_equal(c, a);
+
+  expect_allocations(expected_allocations);
 }
 
-TEST(operations_test, add_return_value) {
-  matrix<int> a({
+TEST_F(operations_test, add_return_value) {
+  matrix<element> a({
       {1, 2, 3},
       {4, 5, 6},
   });
-  const matrix<int> b({
+  const matrix<element> b({
       {10, 20, 30},
       {40, 50, 60},
   });
-  const matrix<int> c({
+  const matrix<element> c({
       {21,  42,  63},
       {84, 105, 126},
   });
 
   (a += b) += b;
   expect_equal(c, a);
+
+  expect_allocations(a.size() + b.size() + c.size());
 }
 
-TEST(operations_test, sub) {
-  matrix<int> a({
+TEST_F(operations_test, sub) {
+  matrix<element> a({
       {11, 22, 33},
       {44, 55, 66},
   });
-  const matrix<int> b({
+  const matrix<element> b({
       {10, 20, 30},
       {40, 50, 60},
   });
-  const matrix<int> c({
+  const matrix<element> c({
       {1, 2, 3},
       {4, 5, 6},
   });
 
+  size_t expected_allocations = a.size() + b.size() + c.size();
+
   expect_equal(c, a - b);
+
+  expect_allocations(expected_allocations += c.size());
 
   a -= b;
   expect_equal(c, a);
+
+  expect_allocations(expected_allocations);
 }
 
-TEST(operations_test, sub_return_value) {
-  matrix<int> a({
+TEST_F(operations_test, sub_return_value) {
+  matrix<element> a({
       {21,  42,  63},
       {84, 105, 126},
   });
-  const matrix<int> b({
+  const matrix<element> b({
       {10, 20, 30},
       {40, 50, 60},
   });
-  const matrix<int> c({
+  const matrix<element> c({
       {1, 2, 3},
       {4, 5, 6},
   });
 
   (a -= b) -= b;
   expect_equal(c, a);
+
+  expect_allocations(a.size() + b.size() + c.size());
 }
 
-TEST(operations_test, mul) {
-  matrix<int> a({
+TEST_F(operations_test, mul) {
+  matrix<element> a({
       {1, 2, 3},
       {4, 5, 6},
       {7, 8, 9},
   });
-  const matrix<int> b({
+  const matrix<element> b({
       {10, 40},
       {20, 50},
       {30, 60},
   });
-  const matrix<int> c({
+  const matrix<element> c({
       {140,  320},
       {320,  770},
       {500, 1220},
   });
 
+  size_t expected_allocations = a.size() + b.size() + c.size();
+
   expect_equal(c, a * b);
+  expect_allocations(expected_allocations += c.size());
 
   a *= b;
   expect_equal(c, a);
+
+  expect_allocations(expected_allocations += c.size());
 }
 
-TEST(operations_test, mul_return_value) {
-  matrix<int> a({
+TEST_F(operations_test, mul_return_value) {
+  matrix<element> a({
       {1, 2, 3},
       {4, 5, 6},
       {7, 8, 9},
   });
-  const matrix<int> b({
+  const matrix<element> b({
       {10, 40},
       {20, 50},
       {30, 60},
   });
-  const matrix<int> c({
+  const matrix<element> c({
       {150,  360},
       {340,  820},
       {530, 1280},
   });
 
+  size_t expected_allocations = a.size() + b.size() + c.size();
+
   (a *= b) += b;
   expect_equal(c, a);
+
+  expect_allocations(expected_allocations += c.size());
 }
 
-TEST(operations_test, mul_scalar) {
-  matrix<int> a({
+TEST_F(operations_test, mul_scalar) {
+  matrix<element> a({
       {1, 2, 3},
       {4, 5, 6},
   });
-  const matrix<int> b({
+  const matrix<element> b({
       {10, 20, 30},
       {40, 50, 60},
   });
 
+  size_t expected_allocations = a.size() + b.size();
+
   expect_equal(b, a * 10);
   expect_equal(b, 10 * a);
 
+  expect_allocations(expected_allocations += b.size() * 2);
+
   a *= 10;
   expect_equal(b, a);
+
+  expect_allocations(expected_allocations);
 }
 
-TEST(operations_test, mul_scalar_return_value) {
-  matrix<int> a({
+TEST_F(operations_test, mul_scalar_return_value) {
+  matrix<element> a({
       {1, 2, 3},
       {4, 5, 6},
   });
-  const matrix<int> b({
+  const matrix<element> b({
       {10, 20, 30},
       {40, 50, 60},
   });
 
   (a *= 5) *= 2;
   expect_equal(b, a);
+
+  expect_allocations(a.size() + b.size());
 }

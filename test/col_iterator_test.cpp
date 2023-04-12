@@ -1,18 +1,9 @@
 #include "matrix.h"
+#include "test_helpers.h"
 
 #include <gtest/gtest.h>
 
 namespace {
-
-struct element {
-  element() = default;
-
-  element(int value) : value(value) {}
-
-  friend bool operator==(element, element) = default;
-
-  int value;
-};
 
 class col_iterator : public ::testing::Test {
 protected:
@@ -25,10 +16,6 @@ protected:
       {14, 15, 16},
   });
 };
-
-bool operator==(matrix<element>::const_iterator it, matrix<element>::const_col_iterator col_it) {
-  return it == col_it.operator->();
-}
 
 template <class It>
 It advance(It it, std::iter_difference_t<It> n) {
