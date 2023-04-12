@@ -10,7 +10,7 @@ struct element {
     return ::operator new[](count);
   }
 
-  element() : value(0) {}
+  element() = default;
 
   element(size_t value) : value(value) {}
 
