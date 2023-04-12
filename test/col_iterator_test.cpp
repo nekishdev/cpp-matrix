@@ -30,7 +30,7 @@ bool operator==(matrix<element>::const_iterator it, matrix<element>::const_col_i
   return it == col_it.operator->();
 }
 
-template <std::random_access_iterator It>
+template <class It>
 It advance(It it, std::iter_difference_t<It> n) {
   while (n > 0) {
     --n;
