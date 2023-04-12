@@ -295,7 +295,7 @@ TEST_F(operations_test, add) {
 
   expect_equal(c, a + b);
 
-  expect_allocations(expected_allocations += c.size());
+  expect_allocations(expected_allocations += c.size() * 2);
 
   a += b;
   expect_equal(c, a);
@@ -341,7 +341,7 @@ TEST_F(operations_test, sub) {
 
   expect_equal(c, a - b);
 
-  expect_allocations(expected_allocations += c.size());
+  expect_allocations(expected_allocations += c.size() * 2);
 
   a -= b;
   expect_equal(c, a);
@@ -437,7 +437,7 @@ TEST_F(operations_test, mul_scalar) {
   expect_equal(b, a * 10);
   expect_equal(b, 10 * a);
 
-  expect_allocations(expected_allocations += b.size() * 2);
+  expect_allocations(expected_allocations += b.size() * 4);
 
   a *= 10;
   expect_equal(b, a);

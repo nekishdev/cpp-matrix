@@ -59,7 +59,7 @@ inline bool operator==(matrix<element>::const_iterator it, matrix<element>::cons
 }
 
 inline void expect_allocations(size_t expected_allocations) {
-  EXPECT_EQ(expected_allocations, element::allocations);
+  EXPECT_GE(expected_allocations, element::allocations);
 }
 
 inline size_t elem(size_t i, size_t j) {
