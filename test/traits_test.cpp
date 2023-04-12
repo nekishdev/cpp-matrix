@@ -70,7 +70,13 @@ TEST(traits_test, col_iterator_member_types) {
   EXPECT_TRUE((std::is_same_v<const element*, std::iterator_traits<matrix<element>::const_col_iterator>::pointer>));
 }
 
-TEST(traits_test, col_iterator_triviality) {
+TEST(traits_test, iterator_triviality) {
+  EXPECT_TRUE(std::is_trivial_v<matrix<element>::iterator>);
+  EXPECT_TRUE(std::is_trivial_v<matrix<element>::const_iterator>);
+
+  EXPECT_TRUE(std::is_trivial_v<matrix<element>::row_iterator>);
+  EXPECT_TRUE(std::is_trivial_v<matrix<element>::const_row_iterator>);
+
   EXPECT_TRUE(std::is_trivial_v<matrix<element>::col_iterator>);
   EXPECT_TRUE(std::is_trivial_v<matrix<element>::const_col_iterator>);
 }
