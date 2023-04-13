@@ -43,6 +43,10 @@ struct element {
 
   friend bool operator==(const element&, const element&) = default;
 
+  friend std::ostream& operator<<(std::ostream& out, const element& e) {
+    return out << e.value;
+  }
+
 public:
   inline static size_t allocations;
 
