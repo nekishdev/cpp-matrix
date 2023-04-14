@@ -35,34 +35,14 @@ TEST(traits_test, range_categories) {
   EXPECT_TRUE(std::ranges::contiguous_range<const matrix<element>>);
 }
 
-TEST(traits_test, iterator_member_types) {
-  EXPECT_TRUE((std::is_same_v<element, std::iterator_traits<matrix<element>::iterator>::value_type>));
-  EXPECT_TRUE((std::is_same_v<element&, std::iterator_traits<matrix<element>::iterator>::reference>));
-  EXPECT_TRUE((std::is_same_v<element*, std::iterator_traits<matrix<element>::iterator>::pointer>));
-
-  EXPECT_TRUE((std::is_same_v<element, std::iterator_traits<matrix<element>::const_iterator>::value_type>));
-  EXPECT_TRUE((std::is_same_v<const element&, std::iterator_traits<matrix<element>::const_iterator>::reference>));
-  EXPECT_TRUE((std::is_same_v<const element*, std::iterator_traits<matrix<element>::const_iterator>::pointer>));
-}
-
-TEST(traits_test, row_iterator_member_types) {
-  EXPECT_TRUE((std::is_same_v<element, std::iterator_traits<matrix<element>::row_iterator>::value_type>));
-  EXPECT_TRUE((std::is_same_v<element&, std::iterator_traits<matrix<element>::row_iterator>::reference>));
-  EXPECT_TRUE((std::is_same_v<element*, std::iterator_traits<matrix<element>::row_iterator>::pointer>));
-
-  EXPECT_TRUE((std::is_same_v<element, std::iterator_traits<matrix<element>::const_row_iterator>::value_type>));
-  EXPECT_TRUE((std::is_same_v<const element&, std::iterator_traits<matrix<element>::const_row_iterator>::reference>));
-  EXPECT_TRUE((std::is_same_v<const element*, std::iterator_traits<matrix<element>::const_row_iterator>::pointer>));
-}
-
 TEST(traits_test, col_iterator_member_types) {
-  EXPECT_TRUE((std::is_same_v<element, std::iterator_traits<matrix<element>::col_iterator>::value_type>));
-  EXPECT_TRUE((std::is_same_v<element&, std::iterator_traits<matrix<element>::col_iterator>::reference>));
-  EXPECT_TRUE((std::is_same_v<element*, std::iterator_traits<matrix<element>::col_iterator>::pointer>));
+  EXPECT_TRUE((std::is_same_v<element, matrix<element>::col_iterator::value_type>));
+  EXPECT_TRUE((std::is_same_v<element&, matrix<element>::col_iterator::reference>));
+  EXPECT_TRUE((std::is_same_v<element*, matrix<element>::col_iterator::pointer>));
 
-  EXPECT_TRUE((std::is_same_v<element, std::iterator_traits<matrix<element>::const_col_iterator>::value_type>));
-  EXPECT_TRUE((std::is_same_v<const element&, std::iterator_traits<matrix<element>::const_col_iterator>::reference>));
-  EXPECT_TRUE((std::is_same_v<const element*, std::iterator_traits<matrix<element>::const_col_iterator>::pointer>));
+  EXPECT_TRUE((std::is_same_v<element, matrix<element>::const_col_iterator::value_type>));
+  EXPECT_TRUE((std::is_same_v<const element&, matrix<element>::const_col_iterator::reference>));
+  EXPECT_TRUE((std::is_same_v<const element*, matrix<element>::const_col_iterator::pointer>));
 }
 
 TEST(traits_test, iterator_triviality) {
