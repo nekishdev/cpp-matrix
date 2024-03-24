@@ -1,6 +1,10 @@
 #include "matrix.h"
 #include "test-helpers.h"
 
+#include <algorithm>
+#include <cstddef>
+#include <iterator>
+#include <utility>
 #include <gtest/gtest.h>
 
 namespace {
