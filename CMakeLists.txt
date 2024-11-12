@@ -7,6 +7,9 @@ find_package(GTest REQUIRED)
 
 file(GLOB TEST_SRC test/*.cpp)
 add_executable(tests ${TEST_SRC})
+# add_executable(tests test/main.cpp)
+
+target_compile_options(tests PRIVATE -w)
 
 target_include_directories(tests PRIVATE src test)
 

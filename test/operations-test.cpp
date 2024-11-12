@@ -380,6 +380,7 @@ TEST_F(operations_test, mul) {
       {20, 50},
       {30, 60},
   });
+
   const matrix<element> c({
       {140,  320},
       {320,  770},

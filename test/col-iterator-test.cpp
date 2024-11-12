@@ -23,7 +23,7 @@ protected:
 };
 
 template <class It>
-It advance(It it, std::iter_difference_t<It> n) {
+It advance_t(It it, std::iter_difference_t<It> n) {
   while (n > 0) {
     --n;
     ++it;
@@ -126,12 +126,12 @@ TEST_F(col_iterator_test, add_diff) {
   EXPECT_EQ(m.col_end(1), it + m.rows());
 
   for (std::ptrdiff_t i = 0; i <= m.rows(); ++i) {
-    EXPECT_EQ(advance(it, i), it + i);
-    EXPECT_EQ(advance(it, i), i + it);
+    EXPECT_EQ(advance_t(it, i), it + i);
+    EXPECT_EQ(advance_t(it, i), i + it);
 
     auto it2 = it;
     it2 += i;
-    EXPECT_EQ(advance(it, i), it2);
+    EXPECT_EQ(advance_t(it, i), it2);
   }
 }
 
@@ -141,11 +141,11 @@ TEST_F(col_iterator_test, sub_diff) {
   EXPECT_EQ(m.col_begin(1), it - m.rows());
 
   for (std::ptrdiff_t i = 0; i <= m.rows(); ++i) {
-    EXPECT_EQ(advance(it, -i), it - i);
+    EXPECT_EQ(advance_t(it, -i), it - i);
 
     auto it2 = it;
     it2 -= i;
-    EXPECT_EQ(advance(it, -i), it2);
+    EXPECT_EQ(advance_t(it, -i), it2);
   }
 }
 
@@ -155,12 +155,12 @@ TEST_F(col_iterator_test, add_neg_diff) {
   EXPECT_EQ(m.col_begin(1), it + -as_diff(m.rows()));
 
   for (std::ptrdiff_t i = 0; i <= m.rows(); ++i) {
-    EXPECT_EQ(advance(it, -i), it + -i);
-    EXPECT_EQ(advance(it, -i), -i + it);
+    EXPECT_EQ(advance_t(it, -i), it + -i);
+    EXPECT_EQ(advance_t(it, -i), -i + it);
 
     auto it2 = it;
     it2 += -i;
-    EXPECT_EQ(advance(it, -i), it2);
+    EXPECT_EQ(advance_t(it, -i), it2);
   }
 }
 
@@ -170,11 +170,11 @@ TEST_F(col_iterator_test, sub_neg_diff) {
   EXPECT_EQ(m.col_end(1), it - -as_diff(m.rows()));
 
   for (std::ptrdiff_t i = 0; i <= m.rows(); ++i) {
-    EXPECT_EQ(advance(it, i), it - -i);
+    EXPECT_EQ(advance_t(it, i), it - -i);
 
     auto it2 = it;
     it2 -= -i;
-    EXPECT_EQ(advance(it, i), it2);
+    EXPECT_EQ(advance_t(it, i), it2);
   }
 }
 
